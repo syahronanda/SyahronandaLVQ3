@@ -1,0 +1,27 @@
+/*!
+ * Copyright (c) 2018. Bobby Syahronanda
+ * Name : Bobby Syahronanda., MTA
+ * Email  : Bobbysyahronanda@gmail.com
+ * Today : 3/14/18 3:10 PM
+ */
+
+// Opacity
+
+@mixin opacity($opacity) {
+  opacity: $opacity;
+  // IE8 filter
+  $opacity-ie: ($opacity * 100);
+  filter: #{alpha(opacity=$opacity-ie)};
+}
+
+@mixin black-filter($opacity){
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-color: rgba(17,17,17,$opacity);
+    display: block;
+    content: "";
+    z-index: 1; 
+}
