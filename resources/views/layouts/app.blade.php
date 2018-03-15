@@ -20,6 +20,7 @@
     <!--     Fonts and icons     -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
+
     @stack('css')
 </head>
 <body>
@@ -60,6 +61,10 @@
     <!-- Material Dashboard DEMO methods, don't include it in your project! -->
     <script src="{{ asset('backend/js/demo.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -68,6 +73,7 @@
 
         });
     </script>
+
     {{--{!! Toastr::message() !!}--}}
     @stack('scripts')
 </body>

@@ -16,20 +16,33 @@
                             <h4 class="title">Title</h4>
                         </div>
                         <div class="card-content">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <strong>Name: Fulan</strong><br>
-                                    <b>Email: bob</b> <br>
-                                    <strong>Message: </strong><hr>
-
-                                    <p>ini pesan</p><hr>
-
-                                </div>
-                            </div>
                             <button class="btn btn-success btn-raised btn-round" data-toggle="modal" data-target="#myModal">
-                                Classic modal
+                                <i class="material-icons">add</i>Tambah Data
                             </button>
                             <div class="clearfix"></div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered" style="width: 100%">
+                                    <thead class="text-primary">
+                                    @for($i=1;$i <=20;$i++)
+                                    <th>CIRI {{$i}}</th>
+                                    @endfor
+
+                                    <th>STATUS</th>
+                                    </thead>
+                                    <tbody>
+                                    @for($i=1;$i <=20;$i++)
+                                    <tr>
+                                        @for($j=1;$j <=20;$j++)
+                                            <td>{{rand(-1,1)}}.{{rand()}}</td>
+                                        @endfor
+                                        <td class="text-primary">B</td>
+                                    </tr>
+                                    @endfor
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -79,11 +92,15 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
+
                                     <label class="control-label">Image</label>
-                                    <input type="file" name="image">
+                                    <input type="file" name="image" id="input-b9">
+
+                                    <div id="kartik-file-errors"></div>
                                 </div>
                             </div>
-                            <a href="#" class="btn btn-danger">Back</a>
+
+                            <button type="reset" class="btn btn-success">Reset</button>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
                     </div>
@@ -100,5 +117,15 @@
 @endsection
 
 @push('scripts')
-
+<script>
+    $(document).on('ready', function() {
+        $("#input-b9").fileinput({
+            showPreview: false,
+            showUpload: false,
+            elErrorContainer: '#kartik-file-errors',
+            allowedFileExtensions: ["jpg", "png", "gif"]
+            //uploadUrl: '/site/file-upload-single'
+        });
+    });
+</script>
 @endpush
