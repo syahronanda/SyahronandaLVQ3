@@ -19,6 +19,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('tes');
-});
+Route::resource('data','DataController');
+Route::get('hapus', 'DataController@destroy');
+
