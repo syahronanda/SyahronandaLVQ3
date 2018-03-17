@@ -31,7 +31,7 @@
                             @if (file_exists('upload/FileEkstrasi.txt'))
                             <div class="table-responsive material-datatables">
                                 <table class="table table-bordered" style="width: 100%" id="datatables">
-                                    <thead class="text-primary">
+                                    {{--<thead class="text-primary">
                                     @for($i=1;$i <=20;$i++)
                                     <th>CIRI {{$i}}</th>
                                     @endfor
@@ -47,7 +47,8 @@
                                         <td class="text-primary">B</td>
                                     </tr>
                                     @endfor
-                                    </tbody>
+                                    </tbody>--}}
+                                    {{addTable($info,$jumlahdata)}}
                                 </table>
                             </div>
                                 @endif
