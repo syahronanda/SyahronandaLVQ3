@@ -5,7 +5,7 @@
             <script>
                 document.write(new Date().getFullYear())
             </script>
-            Design by <a href="http://www.creative-tim.com">Creative Tim</a>, and Developed by <a href="https://cipfahim.github.io/">Md.Aminul Islam Fahim</a>
+            Design by <a href="http://www.creative-tim.com">Creative Tim</a>, and Developed by Bobby Syahronanda</a>
         </p>
     </div>
 </footer>

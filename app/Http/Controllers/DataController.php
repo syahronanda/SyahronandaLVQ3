@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Infodata;
 use Illuminate\Http\Request;
 
 
@@ -15,57 +16,47 @@ class DataController extends Controller
 {
     public function index()
     {
-
-        if (file_exists('upload/FileEkstrasi.txt')) {
-            //return view('tes');
-            //Ambil File Konten
-            $file = public_path() . '/upload/FileEkstrasi.txt';
-            $contents = \File::get($file);
-
-            //Ubha Data Menjadi Array
-            $rows = explode("\n", $contents);
-            $i = 0;
-            $row_data_ = explode(',', $rows[0]);
-            $jumlahdata = count($row_data_);
-
-            foreach ($rows as $row => $data) {
-                //get row data
-                $row_data = explode(',', $data);
-                if (isset($row_data[$jumlahdata - 1])) {
-
-                } else {
-                    continue;
-                }
-                for ($label = 0; $label <= $jumlahdata - 1; $label++) {
-                    $info['data_' . $label][$i] = $row_data[$label];
-                }
-                $i++;
-            }
-            //print_r($info['data_1']);
-            $normalisasi = $this->normalisasiData($info,$jumlahdata);
-            $info = $normalisasi;
-            return view('tes', compact('info', 'jumlahdata'));
-        } else {
-
-        }
         $info[][] = [];
         $jumlahdata = 0;
-        return view('tes', compact('info', 'jumlahdata'));
+
+        $File = Infodata::all()->last();
+        $NamaFile = $File->nama_file;
+
+
+        if (file_exists('upload/'.$NamaFile)) {
+
+            //Ambil File Konten
+            $file = public_path() . '/upload/'.$NamaFile;
+            $jumlahdata = self::GetJumlahCiri($file);
+            $info = self::GetDataNormalisasi($file);
+
+            return view('data', compact('info', 'jumlahdata','NamaFile'));
+        } else {
+            echo "gak ada file";
+        }
+
+        return view('data', compact('info', 'jumlahdata','NamaFile'));
     }
 
     public function store(Request $request)
     {
         $this->validate($request, [
-            'file' => 'required|mimes:txt,csv',
+            'file' => 'required|mimes:txt',
         ]);
         $file = $request->file('file');
 
         if (isset($file)) {
-            $filename = 'FileEkstrasi.' . $file->getClientOriginalExtension();
+            $filename = $request->nama.'.' . $file->getClientOriginalExtension();
             $file->move('upload', $filename);
+
+            $data = new Infodata();
+            $data->nama = $request->nama;
+            $data->nama_file = $filename;
+            $data->save();
         } else {
             echo "tidak ada file";
         }
+
         return redirect()->route('data.index')->with('successMsg', 'Data Tersimpan');
     }
 
@@ -80,13 +71,12 @@ class DataController extends Controller
 
 
     //Bagian Normalisasi
-    function decimal2($number)
+    private function decimal2($number)
     {
         return 1 * (number_format((float)$number, 3, '.', ''));
     }
 
-
-    function norms($x, $min, $max)
+    private function norms($x, $min, $max)
     {
         if (($max - $min) == 0) {
             return 0;
@@ -94,8 +84,7 @@ class DataController extends Controller
         return self::decimal2((($x - $min) / ($max - $min)));
     }
 
-
-    function normalisasiData($info, $jumlah)
+    private function normalisasiData($info, $jumlah)
     {
         for ($arr = 0; $arr < count($info['data_0']); $arr++) {
             $no = $arr + 1;
@@ -114,6 +103,69 @@ class DataController extends Controller
 
         }
         return $norm;
+    }
+
+    //Konversi File Ke Array
+    private function FileToArray($contents)
+    {
+        //Ubha Data Menjadi Array
+        $rows = explode("\n", $contents);
+        $i = 0;
+        $row_data_ = explode(',', $rows[0]);
+        $jumlahdata = count($row_data_);
+
+        foreach ($rows as $row => $data) {
+            //get row data
+            $row_data = explode(',', $data);
+            if (isset($row_data[$jumlahdata - 1])) {
+
+            } else {
+                continue;
+            }
+            for ($label = 0; $label <= $jumlahdata - 1; $label++) {
+                $info['data_' . $label][$i] = $row_data[$label];
+            }
+            $i++;
+        }
+        return $info;
+    }
+
+    public function GetJumlahCiri($file)
+    {
+        //Ubha Data Menjadi Array
+        $contents = \File::get($file);
+        $rows = explode("\n", $contents);
+        $i = 0;
+        $row_data_ = explode(',', $rows[0]);
+        return $jumlahdata = count($row_data_);
+
+    }
+
+    public function GetDataNormalisasi($file)
+    {
+        $contents = \File::get($file);
+        $jumlahdata = self::GetJumlahCiri($file);
+        $info = self::FileToArray($contents);
+
+        $normalisasi = $this->normalisasiData($info,$jumlahdata);
+        return $info = $normalisasi;
+    }
+
+    public function tesdata()
+    {
+        $File = Infodata::all()->last();
+        $NamaFile = $File->nama_file;
+        $file = public_path() . '/upload/'.$NamaFile;
+        $contents = \File::get($file);
+        $jumlahdata = self::GetJumlahCiri($file);
+        $info = self::FileToArray($contents);
+
+        print_r($info['data_1']);
+echo "<br><br>Min = ".min($info['data_1']);
+echo "<br>Max = ".max($info['data_1']);
+        //$normalisasi = $this->normalisasiData($info,$jumlahdata);
+
+        //print_r($normalisasi);
     }
 
 }

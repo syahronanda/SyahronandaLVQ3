@@ -38,7 +38,7 @@
 
                     @yield('content')
 
-                    {{--@include('layouts.partial.footer')--}}
+                    @include('layouts.partial.footer')
 
             </div>
         </div>

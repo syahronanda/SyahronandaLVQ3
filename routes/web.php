@@ -20,5 +20,11 @@
 */
 
 Route::resource('data','DataController');
+Route::resource('proses','ProsesController');
+Route::get('proses','ProsesController@index');
 Route::get('hapus', 'DataController@destroy');
+Route::get('tes', 'ProsesController@wew');
+Route::get('tesdata', 'DataController@tesdata');
+//Route::post('prosesdata', 'ProsesController@proses');
+
 
