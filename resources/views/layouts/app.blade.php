@@ -37,9 +37,9 @@
                     @include('layouts.partial.topbar')
 
                     @yield('content')
-
+{{--<div class="row">
                     @include('layouts.partial.footer')
-
+</div>--}}
             </div>
         </div>
     </div>

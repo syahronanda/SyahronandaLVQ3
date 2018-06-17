@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Hasils;
 use Illuminate\Http\Request;
 use App\Http\Controllers\DataController;
 use App\Formula\Lvq;
@@ -15,7 +16,7 @@ class ProsesController extends Controller
         return view('proses');
     }
 
-    public function store(Request $request)
+    public function store2(Request $request)
     {
         //request
         $NilaiAlfa = $request->alfa;
@@ -29,6 +30,7 @@ class ProsesController extends Controller
         $PengujianTerbaik = 0;
         $W1Akhir[] = null;
         $W2Akhir[] = null;
+        $TotalAkurasi = 0;
 
         $i = 0;
 
@@ -46,7 +48,7 @@ class ProsesController extends Controller
         $lvq = new Lvq();
         $Window = new Window();
 
-        $file = public_path() . '/upload/'.$request->namafile.'.txt';
+        $file = public_path() . '/upload/' . $request->namafile . '.txt';
 
         $Normalisasi = new DataController();
         $jumlahciri = $Normalisasi->GetJumlahCiri($file);
@@ -78,8 +80,8 @@ class ProsesController extends Controller
             $perulanganKfold++;
 
 
-            $data = self::GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Latih');
-            $datauji = self::GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Uji');
+            $data = $Normalisasi->GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Latih');
+            $datauji = $Normalisasi->GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Uji');
 
             //print_r($data);
             // exit();
@@ -148,7 +150,7 @@ class ProsesController extends Controller
             $lvq->showVector($W2);
 
 
-            $bagi = $totalData/$kfold;
+            $bagi = $totalData / $kfold;
 
             echo "<br> Count Data : " . (count($data[0]) + $bagi) . "<br>";
             //Mulai Loop EPOCH
@@ -297,7 +299,7 @@ class ProsesController extends Controller
 
 
                 $k_ = $b_;
-                echo "<tr><td><strong>" . ($k_ + 1) . "</strong><br></td>"; //judul
+                echo "<tr><td><strong>no " . ($k_ + 1) . "</strong><br></td>"; //judul
 
                 //define X Output
                 for ($i_ = 0; $i_ < count($datauji); $i_++) {
@@ -438,28 +440,52 @@ class ProsesController extends Controller
                 $PengujianTerbaik = $perulanganKfold;
                 $W1Akhir = $W1;
                 $W2Akhir = $W2;
+                $EpochAkhir = $epoch;
                 echo " <br> Akurasi Lebih Besar Dari Sebelumnya <br>";
-            }else{
+            } else {
                 echo " <br> Akurasi Lebih Kecil Dari Sebelumnya <br>";
             }
+            $TotalAkurasi = $TotalAkurasi + $centYp;
+
 
         }
 
         echo "end";
         echo "</br>";
+        //print_r($data);
         echo "</br>";
 //__
-        echo "<strong><h1>HASIL AKHIR, AKURASI TERBAIK ADALAH ".$AkurasiAkhir."% PADA PENGUJIAN KE ".$PengujianTerbaik." </h1></strong>";
+        echo "<strong><h1>HASIL AKHIR, AKURASI TERBAIK ADALAH " . $AkurasiAkhir . "% PADA PENGUJIAN KE " . $PengujianTerbaik . ". Rata-rata akurasi = " . ($TotalAkurasi / $kfold) . " % </h1></strong>";
         $W1__ = $lvq->showVector__Kelas($W1Akhir);
         echo "</br>";
         echo "</br>";
         $W2__ = $lvq->showVector__Kelas($W2Akhir);
-        //exit();
 
+
+        //exit();
+        $TotalDataUji = count($datauji[0]);
+        $TotalDataLatih = count($data[0]);
+
+        //simpan data
+        $DataHasil = new Hasils();
+        $DataHasil->jnsQolqolah = $request->namafile;
+        $DataHasil->totalData = $totalData;
+        $DataHasil->totalDataLatih = $TotalDataLatih;
+        $DataHasil->totalDataUji = $TotalDataUji;
+        $DataHasil->alfa = $request->alfa;
+        $DataHasil->window = $request->window;
+        $DataHasil->kfold = $request->kfold;
+        $DataHasil->epoch = $EpochAkhir;
+        $DataHasil->pengujianTerbaik = $PengujianTerbaik;
+        $DataHasil->akurasiTerbaik = $AkurasiAkhir;
+        $DataHasil->akurasiRataRata = $TotalAkurasi / $kfold;
+        $DataHasil->vektor1 = $W1__;
+        $DataHasil->vektor2 = $W2__;
+        $DataHasil->save();
 
     }
 
-    public static function tes($ALFA,$WINDOW,$KFOLD)
+    public static function tes($ALFA, $WINDOW, $KFOLD)
     {
         //request
         $NilaiAlfa = $ALFA;
@@ -517,17 +543,15 @@ class ProsesController extends Controller
             $setWW2 = false;
             $batasawal = $tr0;
             $batasakhir = $tr0 + ($bagi - 1);
-            echo "ambil data dimulai dari " . $batasawal . "-" . $batasakhir;
-            echo "<br>";
             $perulanganKfold++;
 
 
-            $data = ProsesController::GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Latih');
-            $datauji = ProsesController::GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Uji');
+            $data = $Normalisasi->GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Latih');
+            $datauji = $Normalisasi->GetData($dataNormalisasi, $jumlahciri, $batasawal, $batasakhir, 'Uji');
 
             //print_r($data);
             // exit();
-            echo "<strong><h1>PELATIHAN " . $perulanganKfold . "</h1></strong>";
+            echo "<strong><h3>PELATIHAN " . $perulanganKfold . "</h3></strong>";
 
 
             for ($i = 0; $i < (count($dataNormalisasi['data_0'])); $i++) {
@@ -592,7 +616,7 @@ class ProsesController extends Controller
             $lvq->showVector($W2);
 
 
-            $bagi = $totalData/$kfold;
+            $bagi = $totalData / $kfold;
 
             echo "<br> Count Data : " . (count($data[0]) + $bagi) . "<br>";
             //Mulai Loop EPOCH
@@ -692,9 +716,11 @@ class ProsesController extends Controller
             echo "Epoch = " . $epoch;
             echo "</br>";
             echo "Selesai untuk " . count($data[0]) . " data latih";
-
+            echo "</br>";
             //Memulai Pengujian
-            echo "<strong><h1>PENGUJIAN " . $perulanganKfold . "</h1></strong>" . "<br>";
+            echo "<strong><h3>PENGUJIAN " . $perulanganKfold . "</h3></strong>" . "<br>";
+            echo "ambil data dimulai dari " . ($batasawal+1) . "-" . ($batasakhir+1);
+            echo "<br>";
             //Echo weight akhir
             echo "W1 akhir= ";
             $lvq->showVector($W1);
@@ -707,13 +733,7 @@ class ProsesController extends Controller
 
 //bagian pengujian
             echo "                                                                        
-                        </tbody>
-                    </table>
-                    </div>
-					
-					
-	
- <br><br>
+                        <br>
                     <div class='box-body'>
                     <table id='viewTabel' class='table table-bordered table-striped table-hover'>
                         <thead style='background-color:#6bfc19'>
@@ -883,7 +903,7 @@ class ProsesController extends Controller
                 $W1Akhir = $W1;
                 $W2Akhir = $W2;
                 echo " <br> Akurasi Lebih Besar Dari Sebelumnya <br>";
-            }else{
+            } else {
                 echo " <br> Akurasi Lebih Kecil Dari Sebelumnya <br>";
             }
 
@@ -893,7 +913,7 @@ class ProsesController extends Controller
         echo "</br>";
         echo "</br>";
 //__
-        echo "<strong><h1>HASIL AKHIR, AKURASI TERBAIK ADALAH ".$AkurasiAkhir."% PADA PENGUJIAN KE ".$PengujianTerbaik." </h1></strong>";
+        echo "<h3>HASIL AKHIR, AKURASI TERBAIK ADALAH " . $AkurasiAkhir . "% PADA PENGUJIAN KE " . $PengujianTerbaik . " </h3>";
         $W1__ = $lvq->showVector__Kelas($W1Akhir);
         echo "</br>";
         echo "</br>";
@@ -907,43 +927,95 @@ class ProsesController extends Controller
     public function wew()
     {
 
-       $alfa = 0.025;
-       $window = 0.2;
-       $kfold = 5;
-        return view('detailhasil',compact('alfa', 'window','kfold'));
+        $alfa = 0.025;
+        $window = 0.2;
+        $kfold = 10;
+        return view('detailhasil', compact('alfa', 'window', 'kfold'));
     }
 
-
-    public static function GetData($data, $jumlahciri, $batasAwal, $batasAkhir, $jenisData)
+    public function store(Request $request)
     {
-        $totaldata = count($data['data_0']);
-        $i = 0;
-        $tr0 = $batasAwal;
-        $tr1 = $batasAkhir;
-        $view = $data;
+        //penggunakan class
+        $Normalisasi = new DataController();
+        $lvq = new Lvq();
 
+        //variabel
+        $alfa = $request->alfa;
+        $window = $request->window;
+        $kfold = $request->kfold;
+        $file = public_path() . '/upload/' . $request->namafile . '.txt';
 
-        while ($i < $totaldata) {
+        $totalAkurasi = 0;
+        $akurasiAkhir = 0;
+        $akurasiRataRata = 0;
+        $W1Akhir = 0;
+        $W2Akhir = 0;
+        $epochAkhir = 0;
+        $kfoldTerbaik = 0;
 
-            if (($i > $tr0 - 1) && ($i < $tr1 + 1)) {
-                for ($j = 1; $j < $jumlahciri; $j++) {
-                    $datauji[$j][$i] = $view['data_' . ($j - 1)][$i];
-                }
-                $datauji[0][$i] = $view['data_' . ($j - 1)][$i];
+        $jumlahciri = $Normalisasi->GetJumlahCiri($file);
+        $dataNormalisasi = $Normalisasi->GetDataNormalisasi($file);
+        //print_r($data);
 
-            } else {
-                for ($j = 1; $j < $jumlahciri; $j++) {
-                    $datalatih[$j][$i] = $view['data_' . ($j - 1)][$i];
-                }
-                $datalatih[0][$i] = $view['data_' . ($j - 1)][$i];
-            }
-            $i++;
+        $totalData = count($dataNormalisasi['data_0']);
+        $bagi = ($totalData / $kfold);
+        //perulangan k fold
+        $perulanganKfold = 0;
+
+        for ($tr0 = 0; $tr0 < $totalData; $tr0 = $tr0 + $bagi) {
+            $batasawal = $tr0;
+            $batasakhir = $tr0 + ($bagi - 1);
+            /*echo "ambil data dimulai dari " . $batasawal . "-" . $batasakhir;
+            echo "<br>";
+            echo "kfold ke ".$perulanganKfold++;
+            echo "<br>";*/
+
+        $latih = $lvq->PelatihanLVQ($alfa, $window, $kfold, $dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
+
+        $W1 = $latih['w1'];
+        $W2 = $latih['w2'];
+
+        $uji = $lvq->PengujianLVQ($W1, $W2,$dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
+
+        //dd($latih);
+        //$dataPelatihan = $uji['output'];
+        //\helpers::tabelPengujian($dataPelatihan);
+
+        $totalAkurasi = $totalAkurasi + $uji['akurasi']['sama'];
+        if($akurasiAkhir <= $uji['akurasi']['sama'])
+        {
+            $akurasiAkhir = $uji['akurasi']['sama'];
+            $W1Akhir = $W1;
+            $W2Akhir = $W2;
+            $epochAkhir = $latih['epoch'];
+            $kfoldTerbaik = $perulanganKfold;
+
         }
-        if ($jenisData == 'Uji') {
-            return $datauji;
-        } else {
-            return $datalatih;
         }
+        $akurasiRataRata = $totalAkurasi / $kfold;
+        $W1V = $lvq->showVector__Kelas($W1Akhir);
+        $W2V = $lvq->showVector__Kelas($W2Akhir);
+
+        echo "total = ".$akurasiRataRata;
+
+        //simpan data
+        $DataHasil = new Hasils();
+        $DataHasil->jnsQolqolah = $request->namafile;
+        $DataHasil->totalData = $totalData;
+        $DataHasil->totalDataLatih = $totalData - count($uji['output']);
+        $DataHasil->totalDataUji = count($uji['output']);
+        $DataHasil->alfa = $request->alfa;
+        $DataHasil->window = $request->window;
+        $DataHasil->kfold = $request->kfold;
+        $DataHasil->epoch = $epochAkhir;
+        $DataHasil->pengujianTerbaik = $kfoldTerbaik;
+        $DataHasil->akurasiTerbaik = $akurasiAkhir;
+        $DataHasil->akurasiRataRata = $akurasiRataRata;
+        $DataHasil->vektor1 = $W1V;
+        $DataHasil->vektor2 = $W2V;
+        $DataHasil->save();
+
+
 
     }
 

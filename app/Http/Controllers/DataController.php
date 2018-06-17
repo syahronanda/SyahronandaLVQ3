@@ -16,6 +16,12 @@ class DataController extends Controller
 {
     public function index()
     {
+        $data = Infodata::all();
+        return view('data', compact('data'));
+    }
+
+    public function detail()
+    {
         $info[][] = [];
         $jumlahdata = 0;
 
@@ -130,6 +136,7 @@ class DataController extends Controller
         return $info;
     }
 
+    //fungsi untuk pengambilan data
     public function GetJumlahCiri($file)
     {
         //Ubha Data Menjadi Array
@@ -151,21 +158,37 @@ class DataController extends Controller
         return $info = $normalisasi;
     }
 
-    public function tesdata()
+    public function GetData($data, $jumlahciri, $batasAwal, $batasAkhir, $jenisData)
     {
-        $File = Infodata::all()->last();
-        $NamaFile = $File->nama_file;
-        $file = public_path() . '/upload/'.$NamaFile;
-        $contents = \File::get($file);
-        $jumlahdata = self::GetJumlahCiri($file);
-        $info = self::FileToArray($contents);
+        $totaldata = count($data['data_0']);
+        $i = 0;
+        $tr0 = $batasAwal;
+        $tr1 = $batasAkhir;
+        $view = $data;
 
-        print_r($info['data_1']);
-echo "<br><br>Min = ".min($info['data_1']);
-echo "<br>Max = ".max($info['data_1']);
-        //$normalisasi = $this->normalisasiData($info,$jumlahdata);
 
-        //print_r($normalisasi);
+        while ($i < $totaldata) {
+
+            if (($i > $tr0 - 1) && ($i < $tr1 + 1)) {
+                for ($j = 1; $j < $jumlahciri; $j++) {
+                    $datauji[$j][$i] = $view['data_' . ($j - 1)][$i];
+                }
+                $datauji[0][$i] = $view['data_' . ($j - 1)][$i];
+
+            } else {
+                for ($j = 1; $j < $jumlahciri; $j++) {
+                    $datalatih[$j][$i] = $view['data_' . ($j - 1)][$i];
+                }
+                $datalatih[0][$i] = $view['data_' . ($j - 1)][$i];
+            }
+            $i++;
+        }
+        if ($jenisData == 'Uji') {
+            return $datauji;
+        } else {
+            return $datalatih;
+        }
+
     }
 
 }

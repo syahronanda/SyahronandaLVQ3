@@ -12,6 +12,8 @@
  * Date: 17/03/18
  * Time: 12:06
  */
+use App\Formula\Lvq;
+
 class helpers
 {
     public static function addTable($info, $jumlah)
@@ -38,5 +40,42 @@ class helpers
 
         }
         echo "</tbody>";
+    }
+
+    public static function tabelPengujian($data)
+    {
+
+        echo "<table class='table table-bordered table-striped table-hover' border='1'>
+                    <thead style='background-color:#6bfc19'>
+                            <tr>
+								 <th>Data ke</th>
+                                <th>Kelas Input</th>
+                                <th>Hitng Vektor D1</th>
+                                <th>Hitng Vektor D2</th>
+                                <th>Kelas Prediksi</th>
+                                <th>Kelas Output<br>(sama)</th>
+                                                                                        
+                            </tr>
+                        </thead>
+                        <tbody>";
+        $no = 0;
+        $lvq = new Lvq();
+        foreach ($data as $Data) {
+
+            //dd($Data);
+            echo "<tr>
+                  <td>".($no+1)."</td>";
+            echo "<td>";
+            $lvq->showVector($Data['kelas_input']);
+            echo "</td>";
+            echo "<td>".$Data['vektorD1']."</td>";
+            echo "<td>".$Data['vektorD2']."</td>";
+            echo "<td>".$Data['prediksi']."</td>";
+            echo "<td>".$Data['status']."</td>";
+
+            echo      "</tr>";
+            $no++;
+        }
+        echo "</tbody></table>";
     }
 }
