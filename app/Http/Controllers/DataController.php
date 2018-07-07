@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Hasils;
 use App\Infodata;
 use Illuminate\Http\Request;
 
@@ -16,32 +17,33 @@ class DataController extends Controller
 {
     public function index()
     {
-        $data = Infodata::all();
+        $data = Infodata::orderBy('nama', 'asc')->get();
         return view('data', compact('data'));
     }
 
-    public function detail()
+    public function show($tipe)
     {
+
         $info[][] = [];
         $jumlahdata = 0;
 
-        $File = Infodata::all()->last();
-        $NamaFile = $File->nama_file;
+        //$File = Infodata::all()->last();
+        $NamaFile = $tipe . '.txt';
 
 
-        if (file_exists('upload/'.$NamaFile)) {
+        if (file_exists('upload/' . $NamaFile)) {
 
             //Ambil File Konten
-            $file = public_path() . '/upload/'.$NamaFile;
+            $file = public_path() . '/upload/' . $NamaFile;
             $jumlahdata = self::GetJumlahCiri($file);
             $info = self::GetDataNormalisasi($file);
 
-            return view('data', compact('info', 'jumlahdata','NamaFile'));
+            return view('normalisasi', compact('info', 'jumlahdata', 'NamaFile', 'tipe'));
         } else {
             echo "gak ada file";
         }
 
-        return view('data', compact('info', 'jumlahdata','NamaFile'));
+        return view('normalisasi', compact('info', 'jumlahdata', 'NamaFile'));
     }
 
     public function store(Request $request)
@@ -50,15 +52,31 @@ class DataController extends Controller
             'file' => 'required|mimes:txt',
         ]);
         $file = $request->file('file');
+        $FILE = Infodata::where('nama', $request->nama)->get()->first();
 
         if (isset($file)) {
-            $filename = $request->nama.'.' . $file->getClientOriginalExtension();
-            $file->move('upload', $filename);
+            $ciri = self::GetJumlahCiri($file) - 1;
+            if ($FILE == '') {
+                $filename = $request->nama . '.' . $file->getClientOriginalExtension();
+                $file->move('upload', $filename);
 
-            $data = new Infodata();
-            $data->nama = $request->nama;
-            $data->nama_file = $filename;
-            $data->save();
+                $data = new Infodata();
+                $data->nama = $request->nama;
+                $data->nama_file = $filename;
+                $data->ciri = $ciri;
+                $data->id_rujukan_pengujian = '0';
+                $data->save();
+            } else {
+                $filename = $request->nama . '.' . $file->getClientOriginalExtension();
+                $file->move('upload', $filename);
+
+                $FILE->id_rujukan_pengujian = '0';
+                $FILE->ciri = $ciri;
+                $FILE->save();
+
+
+            }
+            self::HapusHasilUji($request->nama);
         } else {
             echo "tidak ada file";
         }
@@ -66,13 +84,32 @@ class DataController extends Controller
         return redirect()->route('data.index')->with('successMsg', 'Data Tersimpan');
     }
 
-    public function destroy()
+    public function HapusHasilUji($tipe)
+    {
+        $Hasil = Hasils::where('jnsQolqolah',$tipe)->get();
+        foreach ($Hasil as $hasil)
+        {
+            $Hapus = Hasils::find($hasil->id);
+            $Hapus->delete();
+        }
+    }
+
+    /*public function destroy()
     {
 
         if (file_exists('upload/FileEkstrasi.txt')) {
             unlink('upload/FileEkstrasi.txt');
         }
         return redirect()->back()->with('successMsg', 'Item successfully Deleted');
+    }*/
+
+    public function SetVektorLatih($jenis, $id)
+    {
+        $Data = Infodata::where('nama', $jenis)->get()->first();
+        $Data->id_rujukan_pengujian = $id;
+        $Data->save();
+        return redirect()->to('hasil/' . $jenis)->with('successMsg', 'Vektor Latih Terupdate');
+
     }
 
 
@@ -101,12 +138,35 @@ class DataController extends Controller
 
             }
 
-            if ((fnmatch("*O*", $info['data_' . ($jumlah - 1)][$arr]))) {
+            if ((fnmatch("*S*", $info['data_' . ($jumlah - 1)][$arr]))) {
                 $norm['data_' . ($jumlah - 1)][$arr] = '2';
             } else {
                 $norm['data_' . ($jumlah - 1)][$arr] = '1';
             }
 
+        }
+        return $norm;
+    }
+
+    private function normalisasiSatuData($DataBaru, $DataLama, $jumlah)
+    {
+
+        for ($label = 0; $label < $jumlah - 1; $label++) {
+            $norm[$label] = self::norms(($DataBaru[$label]), (min($DataLama['data_' . $label])), (max($DataLama['data_' . $label])));
+        }
+        return $norm;
+    }
+
+    private function normalisasiSatuData2($DataBaru, $DataLama, $jumlah)
+    {
+
+        $AkhirData = count($DataLama['data_1']);
+        for ($lbl = 0; $lbl < $jumlah - 1; $lbl++) {
+            $DataLama['data_' . $lbl][$AkhirData] = $DataBaru[$lbl];
+        }
+
+        for ($label = 0; $label < $jumlah - 1; $label++) {
+            $norm[$label] = self::norms(($DataBaru[$label]), (min($DataLama['data_' . $label])), (max($DataLama['data_' . $label])));
         }
         return $norm;
     }
@@ -154,8 +214,18 @@ class DataController extends Controller
         $jumlahdata = self::GetJumlahCiri($file);
         $info = self::FileToArray($contents);
 
-        $normalisasi = $this->normalisasiData($info,$jumlahdata);
+        $normalisasi = $this->normalisasiData($info, $jumlahdata);
         return $info = $normalisasi;
+    }
+
+    public function GetSatuDataNormalisasi($DataBaru, $file)
+    {
+        $contents = \File::get($file);
+        $jumlahdata = self::GetJumlahCiri($file);
+        $info = self::FileToArray($contents);
+
+        $normalisasi = $this->normalisasiSatuData2($DataBaru, $info, $jumlahdata);
+        return $normalisasi;
     }
 
     public function GetData($data, $jumlahciri, $batasAwal, $batasAkhir, $jenisData)

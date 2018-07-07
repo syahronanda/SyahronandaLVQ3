@@ -14,13 +14,17 @@
                     @include('layouts.partial.msg')
                     <div class="card">
                         <div class="card-header" data-background-color="purple">
-                            <h4 class="title">Data Normalisasi</h4>
+                            <h4 class="title">Data Normalisasi {{str_replace('_',' ',$tipe)}}</h4>
                         </div>
                         <div class="card-content table-responsive">
                             <div class="row">
-                            {{\App\Http\Controllers\ProsesController::tes($alfa,$window,$kfold)}}
+                            {{\App\Http\Controllers\ProsesController::tes($alfa,$window,$kfold,$tipe)}}
                             </div>
                         </div>
+                        <center>
+
+                            <a href="{{url('hasil/'.$tipe)}}" class="btn btn-primary">Kembali</a>
+                        </center>
                     </div>
                 </div>
             </div>

@@ -36,6 +36,13 @@
                                 <table class="table table-responsive table-hover">
                                     <thead>
                                     <th>
+                                        Nama Qolqolah
+                                    </th>
+                                    <th>
+                                        Jumlah Ciri Suara
+                                    </th>
+                                    <th>
+                                        id Vektor Uji
                                     </th>
                                     <th>
                                     </th>
@@ -46,15 +53,18 @@
                                             <td>
                                                 {{str_replace('_',' ',$Data->nama)}}
                                             </td>
+                                            <td>
+                                                {{$Data->ciri}}
+                                            </td>
+                                            <td>
+                                                {{$Data->id_rujukan_pengujian}}
+                                            </td>
                                             <td class="td-actions">
-                                                <button type="button" rel="tooltip" class="btn btn-success">
+                                                <a type="button" rel="tooltip" class="btn btn-success" href="data/{{$Data->nama}}">
                                                   {{--  <i class="material-icons">refresh</i>--}}
-                                                    edit
-                                                </button>
-                                                <button type="button" rel="tooltip" class="btn btn-danger">
-                                                   {{-- <i class="material-icons">close</i>--}}
-                                                    hapus
-                                                </button>
+                                                    Lihat
+                                                </a>
+
                                             </td>
                                         </tr>
                                     @endforeach

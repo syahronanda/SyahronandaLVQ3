@@ -14,10 +14,10 @@
                     @include('layouts.partial.msg')
                     <div class="card">
                         <div class="card-header" data-background-color="purple">
-                            <h4 class="title">Data Normalisasi</h4>
+                            <h4 class="title">Data Normalisasi {{str_replace('_',' ',$tipe)}}</h4>
                         </div>
                         <div class="card-content table-responsive">
-                            @if (!file_exists('upload/'.$NamaFile))
+                            {{--@if (!file_exists('upload/'.$NamaFile))
                                 <button class="btn btn-success btn-raised btn-round" data-toggle="modal"
                                         data-target="#addModal">
                                     <i class="material-icons" style="font-size: 18px">add_circle</i>Tambah Data
@@ -27,7 +27,7 @@
                                         data-target="#delModal">
                                     <i class="material-icons" style="font-size: 18px">clear</i>Hapus Data
                                 </button>
-                            @endif
+                            @endif--}}
                             <div class="clearfix"></div>
 
                             @if (file_exists('upload/'.$NamaFile))

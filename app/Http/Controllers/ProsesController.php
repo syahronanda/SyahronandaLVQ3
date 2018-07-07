@@ -282,9 +282,9 @@ class ProsesController extends Controller
                                 <th>Hitng Vektor D2</th>
                                 <th>Kelas Prediksi</th>
                                 <th>Kelas Output<br>(sama)</th>
-                                <th>Update W1</th>
+                                <!--<th>Update W1</th>
                                 <th>Update W2</th>
-                                <th>Ket.</th>
+                                <th>Ket.</th>-->
                                
                             </tr>
                         </thead>
@@ -296,7 +296,6 @@ class ProsesController extends Controller
             $Yp = $Tp = $nol;
             $Yp1 = $Tp1 = $Yp2 = $Tp2 = $nol;
             for ($b_ = $batasawal; $b_ < (count($datauji[0]) + $batasawal); $b_++) {
-
 
                 $k_ = $b_;
                 echo "<tr><td><strong>no " . ($k_ + 1) . "</strong><br></td>"; //judul
@@ -323,6 +322,7 @@ class ProsesController extends Controller
                 //vector terkecil pemenang / J
                 $D1_ = $lvq->hitungVector($x_, $W1_);
                 $D2_ = $lvq->hitungVector($x_, $W2_);
+                dd($W1_);
                 echo "<td>";
                 echo $D1_;
                 echo "<br></td>";
@@ -375,11 +375,11 @@ class ProsesController extends Controller
                 }
 
 
-                echo "<td>W1= ";
+                /*echo "<td>W1= ";
                 $lvq->showVector($W1_);
                 echo "</td><td>W2= ";
                 $lvq->showVector($W2_);
-                echo "</td>";
+                echo "</td>";*/
                 //AKHIR SATU DATA_____________________
 
 
@@ -466,7 +466,7 @@ class ProsesController extends Controller
         $TotalDataUji = count($datauji[0]);
         $TotalDataLatih = count($data[0]);
 
-        //simpan data
+        /*//simpan data
         $DataHasil = new Hasils();
         $DataHasil->jnsQolqolah = $request->namafile;
         $DataHasil->totalData = $totalData;
@@ -481,11 +481,11 @@ class ProsesController extends Controller
         $DataHasil->akurasiRataRata = $TotalAkurasi / $kfold;
         $DataHasil->vektor1 = $W1__;
         $DataHasil->vektor2 = $W2__;
-        $DataHasil->save();
+        $DataHasil->save();*/
 
     }
 
-    public static function tes($ALFA, $WINDOW, $KFOLD)
+    public static function tes($ALFA, $WINDOW, $KFOLD, $TIPE)
     {
         //request
         $NilaiAlfa = $ALFA;
@@ -516,7 +516,7 @@ class ProsesController extends Controller
         $lvq = new Lvq();
         $Window = new Window();
 
-        $file = public_path() . '/upload/ba_sughro.txt';
+        $file = public_path() . '/upload/' . $TIPE . '.txt';
 
         $Normalisasi = new DataController();
         $jumlahciri = $Normalisasi->GetJumlahCiri($file);
@@ -719,7 +719,7 @@ class ProsesController extends Controller
             echo "</br>";
             //Memulai Pengujian
             echo "<strong><h3>PENGUJIAN " . $perulanganKfold . "</h3></strong>" . "<br>";
-            echo "ambil data dimulai dari " . ($batasawal+1) . "-" . ($batasakhir+1);
+            echo "ambil data dimulai dari " . ($batasawal + 1) . "-" . ($batasakhir + 1);
             echo "<br>";
             //Echo weight akhir
             echo "W1 akhir= ";
@@ -924,7 +924,7 @@ class ProsesController extends Controller
     }
 
 
-    public function wew()
+    public static function wew()
     {
 
         $alfa = 0.025;
@@ -963,6 +963,7 @@ class ProsesController extends Controller
         $perulanganKfold = 0;
 
         for ($tr0 = 0; $tr0 < $totalData; $tr0 = $tr0 + $bagi) {
+            $perulanganKfold++;
             $batasawal = $tr0;
             $batasakhir = $tr0 + ($bagi - 1);
             /*echo "ambil data dimulai dari " . $batasawal . "-" . $batasakhir;
@@ -970,51 +971,76 @@ class ProsesController extends Controller
             echo "kfold ke ".$perulanganKfold++;
             echo "<br>";*/
 
-        $latih = $lvq->PelatihanLVQ($alfa, $window, $kfold, $dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
+            $latih = $lvq->PelatihanLVQ($alfa, $window, $kfold, $dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
 
-        $W1 = $latih['w1'];
-        $W2 = $latih['w2'];
+            $W1 = $latih['w1'];
+            $W2 = $latih['w2'];
 
-        $uji = $lvq->PengujianLVQ($W1, $W2,$dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
+            $uji = $lvq->PengujianLVQ($W1, $W2, $dataNormalisasi, $jumlahciri, $batasawal, $batasakhir);
 
-        //dd($latih);
-        //$dataPelatihan = $uji['output'];
-        //\helpers::tabelPengujian($dataPelatihan);
+            //dd($latih);
+            //$dataPelatihan = $uji['output'];
+            //\helpers::tabelPengujian($dataPelatihan);
 
-        $totalAkurasi = $totalAkurasi + $uji['akurasi']['sama'];
-        if($akurasiAkhir <= $uji['akurasi']['sama'])
-        {
-            $akurasiAkhir = $uji['akurasi']['sama'];
-            $W1Akhir = $W1;
-            $W2Akhir = $W2;
-            $epochAkhir = $latih['epoch'];
-            $kfoldTerbaik = $perulanganKfold;
+            $totalAkurasi = $totalAkurasi + $uji['akurasi']['sama'];
+            if ($akurasiAkhir <= $uji['akurasi']['sama']) {
+                $akurasiAkhir = $uji['akurasi']['sama'];
+                $W1Akhir = $W1;
+                $W2Akhir = $W2;
+                $epochAkhir = $latih['epoch'];
+                $kfoldTerbaik = $perulanganKfold;
 
-        }
+            }
         }
         $akurasiRataRata = $totalAkurasi / $kfold;
         $W1V = $lvq->showVector__Kelas($W1Akhir);
         $W2V = $lvq->showVector__Kelas($W2Akhir);
 
-        echo "total = ".$akurasiRataRata;
+        echo "total = " . $akurasiRataRata;
 
-        //simpan data
-        $DataHasil = new Hasils();
-        $DataHasil->jnsQolqolah = $request->namafile;
-        $DataHasil->totalData = $totalData;
-        $DataHasil->totalDataLatih = $totalData - count($uji['output']);
-        $DataHasil->totalDataUji = count($uji['output']);
-        $DataHasil->alfa = $request->alfa;
-        $DataHasil->window = $request->window;
-        $DataHasil->kfold = $request->kfold;
-        $DataHasil->epoch = $epochAkhir;
-        $DataHasil->pengujianTerbaik = $kfoldTerbaik;
-        $DataHasil->akurasiTerbaik = $akurasiAkhir;
-        $DataHasil->akurasiRataRata = $akurasiRataRata;
-        $DataHasil->vektor1 = $W1V;
-        $DataHasil->vektor2 = $W2V;
-        $DataHasil->save();
+        //kembali
+        $Hasil = Hasils::where('jnsQolqolah', $request->namafile)->where('alfa', $request->alfa)->where('window', $request->window)->where('kfold', $request->kfold)->get()->last();
 
+        if ($Hasil == '') {
+
+            //simpan data
+            $DataHasil = new Hasils();
+            $DataHasil->jnsQolqolah = $request->namafile;
+            $DataHasil->totalData = $totalData;
+            $DataHasil->totalDataLatih = $totalData - count($uji['output']);
+            $DataHasil->totalDataUji = count($uji['output']);
+            $DataHasil->alfa = $request->alfa;
+            $DataHasil->window = $request->window;
+            $DataHasil->kfold = $request->kfold;
+            $DataHasil->epoch = $epochAkhir;
+            $DataHasil->pengujianTerbaik = $kfoldTerbaik;
+            $DataHasil->akurasiTerbaik = $akurasiAkhir;
+            $DataHasil->akurasiRataRata = $akurasiRataRata;
+            $DataHasil->vektor1 = $W1V;
+            $DataHasil->vektor2 = $W2V;
+            $DataHasil->save();
+
+            return redirect()->to('hasil/' . $request->namafile)->with('successMsg', 'Pelatihan dan pengujian data selesai');
+        } else {
+
+            //Update Data
+            $Hasil->jnsQolqolah = $request->namafile;
+            $Hasil->totalData = $totalData;
+            $Hasil->totalDataLatih = $totalData - count($uji['output']);
+            $Hasil->totalDataUji = count($uji['output']);
+            $Hasil->alfa = $request->alfa;
+            $Hasil->window = $request->window;
+            $Hasil->kfold = $request->kfold;
+            $Hasil->epoch = $epochAkhir;
+            $Hasil->pengujianTerbaik = $kfoldTerbaik;
+            $Hasil->akurasiTerbaik = $akurasiAkhir;
+            $Hasil->akurasiRataRata = $akurasiRataRata;
+            $Hasil->vektor1 = $W1V;
+            $Hasil->vektor2 = $W2V;
+            $Hasil->save();
+
+            return redirect()->to('hasil/' . $request->namafile)->with('warningMsg', 'Pelatihan dan pengujian data selesai (Terupdate)');
+        }
 
 
     }

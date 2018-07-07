@@ -23,7 +23,7 @@
                     @include('layouts.partial.msg')
                     <div class="card">
                         <div class="card-header" data-background-color="purple">
-                            <h4 class="title">Hasil Pelatihan Dan Pengujian</h4>
+                            <h4 class="title">Uji Data Tunggal</h4>
                         </div>
                         <div class="card-content table-responsive">
                             <div class="card-body">
@@ -31,10 +31,6 @@
                                 <table class="table table-responsive table-hover">
                                     <thead>
                                     <th>
-                                        Jenis Qolqolah
-                                    </th>
-                                    <th>
-                                        Jumlah Hasil Pengujian
                                     </th>
                                     <th>
                                     </th>
@@ -45,12 +41,8 @@
                                             <td>
                                                 {{str_replace('_',' ',$Data->nama)}}
                                             </td>
-                                            <td>
-                                                {{count(\App\Hasils::where('jnsQolqolah',$Data->nama)->get())}}
-                                            </td>
                                             <td class="td-actions">
-                                                <a type="button" rel="tooltip" class="btn btn-success"
-                                                   href="hasil/{{$Data->nama}}">
+                                                <a type="button" rel="tooltip" class="btn btn-success" href="{{url('uji/'.$Data->nama)}}">
                                                     {{--  <i class="material-icons">refresh</i>--}}
                                                     Lihat
                                                 </a>

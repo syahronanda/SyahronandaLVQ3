@@ -26,7 +26,11 @@ Route::get('hapus', 'DataController@destroy');
 Route::get('tes', 'ProsesController@wew');
 Route::get('teslatih', 'ProsesController@latih');
 Route::get('tesdata', 'DataController@tesdata');
-Route::get('hasil', 'HasilController@index');
+//Route::get('hasil', 'HasilController@index');
+Route::resource('hasil','HasilController');
+Route::resource('uji','UjiController');
+Route::get('setLatih/{jenis}/{id}','DataController@SetVektorLatih');
+Route::get('hasil/{jenis}/{id}','HasilController@Detail');
 //Route::post('prosesdata', 'ProsesController@proses');
 
 
