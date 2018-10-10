@@ -485,7 +485,7 @@ class ProsesController extends Controller
 
     }
 
-    public static function tes($ALFA, $WINDOW, $KFOLD, $TIPE)
+    public static function DetailHasil($ALFA, $WINDOW, $KFOLD, $TIPE)
     {
         //request
         $NilaiAlfa = $ALFA;
@@ -499,7 +499,8 @@ class ProsesController extends Controller
         $PengujianTerbaik = 0;
         $W1Akhir[] = null;
         $W2Akhir[] = null;
-
+        $AKURASI[] = null;
+        $EPOCH[] = null;
         $i = 0;
 
         $nol = 0;
@@ -527,6 +528,36 @@ class ProsesController extends Controller
         $bagi = ($totalData / $kfold);
         //perulangan k fold
         $perulanganKfold = 0;
+
+        //echo tab
+        echo '<div class="card card-nav-tabs">
+                        <div class="card-header" data-background-color="green">
+                            <div class="nav-tabs-navigation">
+                                <div class="nav-tabs-wrapper">
+                                    <span class="nav-tabs-title"></span>
+                                    <ul class="nav nav-tabs" data-tabs="tabs">
+                                        <li class="">
+                                            <a href="#proses" data-toggle="tab">
+                                                Proses Pelatihan Dan Pengujian
+                                                <div class="ripple-container"></div>
+                                            </a>
+                                        </li>
+                                        <li class="">
+                                            <a href="#hasil" data-toggle="tab">
+                                                Hasil
+                                                <div class="ripple-container"></div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>';
+
+        echo '<div class="card-content">
+                            <div class="tab-content">
+                        ';
+
+        echo '<div class="tab-pane active" id="proses">';
         for ($tr0 = 0; $tr0 < $totalData; $tr0 = $tr0 + $bagi) {
             //deklarasi koefesion matrix
             $ww1 = $ww2 = $nol;
@@ -538,7 +569,7 @@ class ProsesController extends Controller
             $SUMTp = 0;
             $a = $alfa = $NilaiAlfa;
             $e = $window = $NilaiWindow;
-            $epoch = 1;
+            $epoch = 0;
             $setWW1 = false;
             $setWW2 = false;
             $batasawal = $tr0;
@@ -551,6 +582,12 @@ class ProsesController extends Controller
 
             //print_r($data);
             // exit();
+            //mulai echo dari sini
+
+
+
+
+
             echo "<strong><h3>PELATIHAN " . $perulanganKfold . "</h3></strong>";
 
 
@@ -907,9 +944,30 @@ class ProsesController extends Controller
                 echo " <br> Akurasi Lebih Kecil Dari Sebelumnya <br>";
             }
 
-        }
+            $AKURASI[$perulanganKfold] = $centYp;
+            $EPOCH[$perulanganKfold] = $epoch;
 
-        echo "end";
+        }//akhir for
+        echo "Selesai";
+        echo "</div>";
+        echo '<div class="tab-pane" id="hasil">';
+
+        echo "
+<table id='viewTabel' class='datatable table table-bordered table-striped table-hover'>
+<tr>
+<td>Pengujian</td>
+<td>Epoch</td>
+<td>Akurasi</td>
+</tr>";
+        for ($ii = 1; $ii <= $perulanganKfold; $ii++) {
+            echo "<tr>
+<td>".$ii."</td>
+<td>".$EPOCH[$ii]."</td>
+<td>".$AKURASI[$ii]."</td>
+</tr>";
+        }
+        echo "
+</table>";
         echo "</br>";
         echo "</br>";
 //__
@@ -918,7 +976,10 @@ class ProsesController extends Controller
         echo "</br>";
         echo "</br>";
         $W2__ = $lvq->showVector__Kelas($W2Akhir);
+
+
         //exit();
+        echo "</div></div></div></div>"; //ini divnya tab
 
 
     }

@@ -56,39 +56,45 @@ class DataController extends Controller
 
         if (isset($file)) {
             $ciri = self::GetJumlahCiri($file) - 1;
-            if ($FILE == '') {
-                $filename = $request->nama . '.' . $file->getClientOriginalExtension();
-                $file->move('upload', $filename);
+            $ValidasiFile = self::ValidasiDataEkstrasi($file);
+            if ($ValidasiFile == true) {
+                if ($FILE == '') {
+                    $filename = $request->nama . '.' . $file->getClientOriginalExtension();
+                    $file->move('upload', $filename);
 
-                $data = new Infodata();
-                $data->nama = $request->nama;
-                $data->nama_file = $filename;
-                $data->ciri = $ciri;
-                $data->id_rujukan_pengujian = '0';
-                $data->save();
-            } else {
-                $filename = $request->nama . '.' . $file->getClientOriginalExtension();
-                $file->move('upload', $filename);
+                    $data = new Infodata();
+                    $data->nama = $request->nama;
+                    $data->nama_file = $filename;
+                    $data->ciri = $ciri;
+                    $data->id_rujukan_pengujian = '0';
+                    $data->save();
+                    return redirect()->route('data.index')->with('successMsg', 'Data ' . $filename . ' Tersimpan');
+                } else {
+                    $filename = $request->nama . '.' . $file->getClientOriginalExtension();
+                    $file->move('upload', $filename);
 
-                $FILE->id_rujukan_pengujian = '0';
-                $FILE->ciri = $ciri;
-                $FILE->save();
-
-
+                    $FILE->id_rujukan_pengujian = '0';
+                    $FILE->ciri = $ciri;
+                    $FILE->save();
+                    self::HapusHasilUji($request->nama);
+                    return redirect()->route('data.index')->with('successMsg', 'Data ' . $filename . ' Terupdate');
+                }
             }
-            self::HapusHasilUji($request->nama);
+            else{
+                return redirect()->route('data.index')->with('warningMsg', 'Data File Ekstrasi Tidak Valid');
+            }
+
         } else {
             echo "tidak ada file";
         }
 
-        return redirect()->route('data.index')->with('successMsg', 'Data Tersimpan');
+
     }
 
     public function HapusHasilUji($tipe)
     {
-        $Hasil = Hasils::where('jnsQolqolah',$tipe)->get();
-        foreach ($Hasil as $hasil)
-        {
+        $Hasil = Hasils::where('jnsQolqolah', $tipe)->get();
+        foreach ($Hasil as $hasil) {
             $Hapus = Hasils::find($hasil->id);
             $Hapus->delete();
         }
@@ -111,7 +117,6 @@ class DataController extends Controller
         return redirect()->to('hasil/' . $jenis)->with('successMsg', 'Vektor Latih Terupdate');
 
     }
-
 
     //Bagian Normalisasi
     private function decimal2($number)
@@ -261,4 +266,35 @@ class DataController extends Controller
 
     }
 
+    public function ValidasiDataEkstrasi($file)
+    {
+        $contents = \File::get($file);
+
+        //Ubha Data Menjadi Array
+        $rows = explode("\n", $contents);
+        $row_data_ = explode(',', $rows[0]);
+        $jumlahCiri = count($row_data_);
+        $jumlahData = count($rows);
+
+        $no = 0;
+        $kondisi = true;
+        foreach ($rows as $row) {
+            $data = explode(',', $rows[$no]);
+            $ciri = count($data);
+            $status = $data[$ciri - 1];
+            $no++;
+            //echo $no++."Ciri = ".$ciri." -> status ".$status." <br>";
+            if (fnmatch("*B*", $status) || fnmatch("*S*", $status)) {
+                $kondisiStatus = "n";
+            } else {
+                $kondisiStatus = "x";
+            }
+
+            if ($ciri != $jumlahCiri || $kondisiStatus == "x") {
+                $kondisi = false;
+                break;
+            }
+        }
+        return $kondisi;
+    }
 }

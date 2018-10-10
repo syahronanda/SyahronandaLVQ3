@@ -28,7 +28,7 @@
             <li class="{{ Request::is('data') ? 'active': '' }}">
                 <a href="{{route('data.index')}}">
                     {{--<i class="material-icons">dashboard</i>--}}
-                    <p>Data</p>
+                    <p>Manajemen Data</p>
                 </a>
             </li>
             <li class="{{ Request::is('proses') ? 'active': '' }}">
@@ -43,12 +43,12 @@
                     <p>Hasil Pengujian</p>
                 </a>
             </li>
-            <li class="{{ Request::is('uji') ? 'active': '' }}">
+            {{--<li class="{{ Request::is('uji') ? 'active': '' }}">
                 <a href="{{route('uji.index')}}">
-                    {{--<i class="material-icons">dashboard</i>--}}
+                    --}}{{--<i class="material-icons">dashboard</i>--}}{{--
                     <p>Uji Data Tunggal</p>
                 </a>
-            </li>
+            </li>--}}
 
 
         </ul>

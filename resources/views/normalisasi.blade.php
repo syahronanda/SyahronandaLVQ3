@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
-@section('title','TA BOBBY MAU WISUDA')
+@section('title','Data Normalisasi '.str_replace('_',' ',$tipe))
 {{--<link rel="stylesheet" type="text/css" href="https://adminlte.io/themes/AdminLTE/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"/>--}}
+
 @push('css')
 
+{{--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>--}}
 @endpush
 
 @section('content')
@@ -32,7 +34,7 @@
 
                             @if (file_exists('upload/'.$NamaFile))
                                 <div class="table-responsive material-datatables">
-                                    <table class="table table-bordered" style="width: 100%" id="datatables">
+                                    <table class="datatable table table-bordered" style="width: 100%">
                                         {{helpers::addTable($info,$jumlahdata)}}
                                     </table>
                                 </div>
@@ -152,54 +154,11 @@
                 </div>
             </div>
         </div>
+    </div>
         <!--  End Modal -->
 
         @endsection
 
         @push('scripts')
-        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
-        <script type="text/javascript"
-                src="https://adminlte.io/themes/AdminLTE/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#datatables').DataTable({
-                    "pagingType": "full_numbers",
-                    "lengthMenu": [
-                        [10, 25, 50, -1],
-                        [10, 25, 50, "All"]
-                    ],
-                    responsive: true,
-                    language: {
-                        search: "_INPUT_",
-                        searchPlaceholder: "Search records",
-                    }
 
-                });
-
-
-                var table = $('#datatables').DataTable();
-
-                // Edit record
-                table.on('click', '.edit', function () {
-                    $tr = $(this).closest('tr');
-
-                    var data = table.row($tr).data();
-                    alert('You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.');
-                });
-
-                // Delete a record
-                table.on('click', '.remove', function (e) {
-                    $tr = $(this).closest('tr');
-                    table.row($tr).remove().draw();
-                    e.preventDefault();
-                });
-
-                //Like record
-                table.on('click', '.like', function () {
-                    alert('You clicked on Like button');
-                });
-
-                $('.card .material-datatables label').addClass('form-group');
-            });
-        </script>
     @endpush

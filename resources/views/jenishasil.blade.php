@@ -8,7 +8,7 @@
 
 @extends('layouts.app')
 
-@section('title','TA BOBBY MAU WISUDA')
+@section('title','Hasil Pelatihan Dan Pengujian '.str_replace('_',' ',$tipe))
 
 @push('css')
 
@@ -28,10 +28,13 @@
                         <div class="card-content table-responsive">
                             <div class="card-body">
 
-                                <table class="table table-responsive table-hover table-bordered">
+                                <table class="datatable table table-responsive table-hover table-bordered">
                                     <thead class="bg-info">
                                     <th>
                                         Total Data
+                                    </th>
+                                    <th>
+                                        Kfold
                                     </th>
                                     <th>
                                         Total Data Latih
@@ -45,9 +48,7 @@
                                     <th>
                                         Window
                                     </th>
-                                    <th>
-                                        Kfold
-                                    </th>
+
                                     <th>
                                         Epoch
                                     </th>
@@ -77,6 +78,9 @@
                                                 {{$Data->totalData}}
                                             </td>
                                             <td>
+                                                {{$Data->kfold}}
+                                            </td>
+                                            <td>
                                                 {{$Data->totalDataLatih}}
                                             </td>
                                             <td>
@@ -88,9 +92,7 @@
                                             <td>
                                                 {{$Data->window}}
                                             </td>
-                                            <td>
-                                                {{$Data->kfold}}
-                                            </td>
+
                                             <td>
                                                 {{$Data->epoch}}
                                             </td>
@@ -115,19 +117,19 @@
                                                     {{--  <i class="material-icons">refresh</i>--}}
                                                     Lihat Rincian
                                                 </a>
-                                                @if($idRujukan ==$Data->id)
+                                                {{--@if($idRujukan ==$Data->id)
                                                     <a type="button" rel="tooltip" class="btn btn-warning"
                                                        href="{{url('setLatih/'.$Data->jnsQolqolah.'/'.$Data->id)}}">
-                                                        {{--  <i class="material-icons">refresh</i>--}}
+                                                        --}}{{--  <i class="material-icons">refresh</i>--}}{{--
                                                         Digunakan Sebagai Vektor Uji
                                                     </a>
                                                 @else
                                                     <a type="button" rel="tooltip" class="btn btn-success"
                                                        href="{{url('setLatih/'.$Data->jnsQolqolah.'/'.$Data->id)}}">
-                                                        {{--  <i class="material-icons">refresh</i>--}}
+                                                        --}}{{--  <i class="material-icons">refresh</i>--}}{{--
                                                         Set Sebagai Vektor Uji
                                                     </a>
-                                                @endif
+                                                @endif--}}
 
                                             </td>
                                         </tr>

@@ -18,7 +18,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('euy','DataController@ValidasiDataEkstrasi');
+Route::get('/','DataController@index');
 Route::resource('data','DataController');
 Route::resource('proses','ProsesController');
 Route::get('proses','ProsesController@index');

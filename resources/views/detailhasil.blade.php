@@ -12,13 +12,18 @@
             <div class="row">
                 <div class="col-md-12">
                     @include('layouts.partial.msg')
+
+
+
+
+
                     <div class="card">
                         <div class="card-header" data-background-color="purple">
-                            <h4 class="title">Data Normalisasi {{str_replace('_',' ',$tipe)}}</h4>
+                            <h4 class="title">Detail Pelatihan Dan Pengujian Data {{str_replace('_',' ',$tipe)}}</h4>
                         </div>
                         <div class="card-content table-responsive">
                             <div class="row">
-                            {{\App\Http\Controllers\ProsesController::tes($alfa,$window,$kfold,$tipe)}}
+                                {{\App\Http\Controllers\ProsesController::DetailHasil($alfa,$window,$kfold,$tipe)}}
                             </div>
                         </div>
                         <center>

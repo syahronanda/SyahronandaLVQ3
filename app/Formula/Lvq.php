@@ -199,7 +199,7 @@ class Lvq
 
         while (($epoch < 50)) {
             //min alfa
-            if ($alfa < 0.02) {
+            if ($alfa < 0.02) {// ini min alfa
                 break;
             }
 
@@ -270,7 +270,7 @@ class Lvq
 
 
                             } else {
-                                $masukIf = "dijauhi vektor<br>";
+                               // $masukIf = "dijauhi vektor<br>";
                                 if ($J == 1) {
                                     $W1 = $lvq->updateKurang1($x, $W1, $alfa); //(-)
                                 } else {
@@ -284,7 +284,7 @@ class Lvq
                 }
             }
             $epoch++;
-            $alfa = $alfa - (0.1 * $alfa);
+            $alfa = $alfa - (0.1 * $alfa); //pengurangan alfa/learning rate
 
         }
 

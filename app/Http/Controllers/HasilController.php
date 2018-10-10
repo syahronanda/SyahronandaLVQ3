@@ -17,7 +17,7 @@ class HasilController extends Controller
 
     public function show($tipe)
     {
-        $data = Hasils::where('jnsQolqolah', $tipe)->orderBy('akurasiRataRata', 'desc')->get();
+        $data = Hasils::where('jnsQolqolah', $tipe)->orderBy('kfold', 'asc')->orderBy('alfa', 'asc')->orderBy('window', 'asc')->get();
         $DataQolqolah = Infodata::where('nama', $tipe)->get()->first();
         $idRujukan = $DataQolqolah->id_rujukan_pengujian;
         return view('jenishasil', compact('data', 'tipe', 'idRujukan'));

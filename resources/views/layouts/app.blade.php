@@ -23,7 +23,7 @@
 
     <!--  Datatables CSS    -->
 
-
+    <link rel="stylesheet" type="text/css" href="{{ asset('backend/datatable/buttons.dataTables.min.css')}}"/>
     @stack('css')
 </head>
 <body>
@@ -78,6 +78,47 @@
     </script>
 
     {{--{!! Toastr::message() !!}--}}
+
+    <script type="text/javascript" src="{{ asset('backend/datatable/datatables.min.js')}}"></script>
+    <script type="text/javascript"
+            src="{{ asset('backend/datatable/dataTables.buttons.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('backend/datatable/buttons.flash.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('backend/datatable/jszip.min.js')}}"></script>
+    <script type="text/javascript"
+            src="{{ asset('backend/datatable/pdfmake.min.js')}}"></script>
+    <script type="text/javascript"
+            src="{{ asset('backend/datatable/vfs_fonts.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('backend/datatable/buttons.print.min.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('backend/datatable/buttons.html5.min.js')}}"></script>
+    <script type="text/javascript"
+            src="{{ asset('backend/datatable/dataTables.bootstrap.min.js')}}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.datatable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print',
+                ],
+                "pagingType": "full_numbers",
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "All"]
+                ],
+                responsive: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records",
+                }
+
+
+            });
+
+
+
+            //$('.card .material-datatables label').addClass('form-group');
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>
